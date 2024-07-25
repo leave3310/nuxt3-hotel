@@ -45,5 +45,8 @@
     "scss",
     "pcss",
     "postcss"
-  ]
+  ],
+  "path-intellisense.mappings": {
+    "@": "${workspaceFolder}"
+  }
 }
