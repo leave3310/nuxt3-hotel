@@ -2,6 +2,11 @@
 export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
+  runtimeConfig: {
+    public: {
+      apiURL: "",
+    },
+  },
   modules: [
     "@nuxtjs/google-fonts",
     "nuxt-svgo",
@@ -28,5 +33,7 @@ export default defineNuxtConfig({
   pinia: {
     storesDirs: ["./stores/**"],
   },
-
+  svgo: {
+    defaultImport: "component",
+  },
 });
