@@ -9,9 +9,12 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        "noto-serif-tc": ["'Noto Serif TC'", "serif"],
+      },
       colors: {
         primary: {
-          tint: "#FAF7F5",
+          10: "#F7F2EE",
           40: "#F1EAE4",
           60: "#E1D1C2",
           80: "#D0B79F",

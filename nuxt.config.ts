@@ -36,4 +36,11 @@ export default defineNuxtConfig({
   svgo: {
     defaultImport: "component",
   },
+  googleFonts: {
+    families: {
+      "Noto+Serif+TC": true,
+    },
+    display: "swap",
+
+  },
 });
