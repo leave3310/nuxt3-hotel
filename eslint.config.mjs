@@ -1,8 +1,7 @@
-import antfu from "@antfu/eslint-config"
-import { FlatCompat } from '@eslint/eslintrc'
+import antfu from "@antfu/eslint-config";
+import { FlatCompat } from "@eslint/eslintrc";
 
-const compat = new FlatCompat()
-
+const compat = new FlatCompat();
 
 export default antfu({
   // TypeScript and Vue are autoetected, you can also explicitly enable them:
@@ -13,8 +12,6 @@ export default antfu({
   },
   typescript: true,
   vue: true,
-},
-...compat.config({
-    extends: ["plugin:tailwindcss/recommended"],
-  })
-)
+}, ...compat.config({
+  extends: ["plugin:tailwindcss/recommended"],
+}));
