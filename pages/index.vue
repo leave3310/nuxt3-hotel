@@ -1,9 +1,11 @@
 <script setup lang="ts">
-const testStore = useWebsiteStore();
+// import { getUser } from "@/api/instances/user.ts";
+
+// await getUser();
 </script>
 
 <template>
   <div>
-    123
+    <CarouselComponent />
   </div>
 </template>

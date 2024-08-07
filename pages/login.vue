@@ -6,7 +6,7 @@ definePageMeta({
   layout: "only-header",
 });
 
-const { handleSubmit } = useForm<LoginForm>({
+const { handleSubmit, meta } = useForm<LoginForm>({
   validationSchema: {
     email: { email: true, required: true },
     password: { required: true },
@@ -48,9 +48,6 @@ const onSubmit = handleSubmit(async (values) => {
       >
     </div>
     <div class="w-full pt-[10.25rem] xl:w-1/2 xl:pt-[9.94rem]">
-      <!-- <BaseButton type="button">
-        123
-      </BaseButton> -->
       <div class="mx-auto px-5 xl:max-w-[26rem]">
         <div
           class="mb-2 text-sm font-bold leading-normal tracking-[0.0175rem] text-primary xl:text-base xl:tracking-[0.02rem]"
@@ -130,11 +127,15 @@ const onSubmit = handleSubmit(async (values) => {
               忘記密碼?
             </router-link>
           </div>
-          <button
-            class="mb-10 w-full rounded-lg bg-neutral-40 px-8 py-4 text-base font-bold tracking-[0.02rem] text-neutral-60"
+          <BaseButton
+            type="button"
+            class-type="primary"
+            class="mb-10 w-full"
+            :disable="!meta.valid"
           >
             會員登入
-          </button>
+          </BaseButton>
+
           <div>
             <span
               class="mr-2 text-sm font-medium leading-normal tracking-[0.0175rem] text-neutral-0 xl:text-base xl:tracking-[0.02rem]"
@@ -147,7 +148,6 @@ const onSubmit = handleSubmit(async (values) => {
             </router-link>
           </div>
         </form>
-        <button />
       </div>
     </div>
   </div>
