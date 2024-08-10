@@ -6,14 +6,14 @@ definePageMeta({
   layout: "only-header",
 });
 
-const { handleSubmit } = useForm<LoginForm>({
+const { handleSubmit, meta } = useForm<LoginForm>({
   validationSchema: {
     email: { email: true, required: true },
     password: { required: true },
   },
   initialValues: {
-    email: "s@gmail.com",
-    password: "12345678",
+    email: "",
+    password: "",
     rememberAccount: false,
   },
 });
@@ -48,9 +48,6 @@ const onSubmit = handleSubmit(async (values) => {
       >
     </div>
     <div class="w-full pt-[10.25rem] xl:w-1/2 xl:pt-[9.94rem]">
-      <!-- <BaseButton type="button">
-        123
-      </BaseButton> -->
       <div class="mx-auto px-5 xl:max-w-[26rem]">
         <div
           class="mb-2 text-sm font-bold leading-normal tracking-[0.0175rem] text-primary xl:text-base xl:tracking-[0.02rem]"
@@ -62,7 +59,7 @@ const onSubmit = handleSubmit(async (values) => {
         >
           立即開始旅程
         </div>
-        <form @submit.prevent="onSubmit()">
+        <form @submit.prevent="onSubmit">
           <div class="mb-4">
             <label
               for="email"
@@ -70,6 +67,7 @@ const onSubmit = handleSubmit(async (values) => {
             >電子信箱</label>
             <input
               v-model="email"
+              data-testid="email-input"
               type="email"
               placeholder="hello@exsample.com"
               class="w-full rounded-lg border bg-neutral-0 p-4 text-sm font-medium leading-normal tracking-[0.0175rem] focus:border-primary focus:shadow-[0px_0px_0px_4px_rgba(190,156,124,0.10)] focus:ring-0 xl:text-base xl:tracking-[0.02rem]"
@@ -89,6 +87,7 @@ const onSubmit = handleSubmit(async (values) => {
             >密碼</label>
             <input
               v-model="password"
+              data-testid="password-input"
               type="password"
               placeholder="請輸入密碼"
               class="w-full rounded-lg border bg-neutral-0 p-4 text-sm font-medium leading-normal tracking-[0.0175rem] focus:border-primary focus:shadow-[0px_0px_0px_4px_rgba(190,156,124,0.10)] focus:ring-0 xl:text-base xl:tracking-[0.02rem]"
@@ -130,11 +129,16 @@ const onSubmit = handleSubmit(async (values) => {
               忘記密碼?
             </router-link>
           </div>
-          <button
-            class="mb-10 w-full rounded-lg bg-neutral-40 px-8 py-4 text-base font-bold tracking-[0.02rem] text-neutral-60"
+          <BaseButton
+            data-testid="login-button"
+            type="submit"
+            class-type="primary"
+            class="mb-10 w-full"
+            :disable="!meta.valid"
           >
             會員登入
-          </button>
+          </BaseButton>
+
           <div>
             <span
               class="mr-2 text-sm font-medium leading-normal tracking-[0.0175rem] text-neutral-0 xl:text-base xl:tracking-[0.02rem]"
@@ -147,7 +151,6 @@ const onSubmit = handleSubmit(async (values) => {
             </router-link>
           </div>
         </form>
-        <button />
       </div>
     </div>
   </div>
