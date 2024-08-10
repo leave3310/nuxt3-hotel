@@ -13,6 +13,7 @@ export default defineNuxtConfig({
     "@vueuse/nuxt",
     "@vee-validate/nuxt",
     "@pinia/nuxt",
+    "@nuxt/test-utils/module",
   ],
   css: ["~/assets/css/tailwind.css"],
   postcss: {
