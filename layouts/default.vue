@@ -1,10 +1,7 @@
-<script setup lang="ts">
-</script>
-
 <template>
   <div>
     <LayoutsHeaderBlock />
-    <main class="flex h-dvh flex-1 flex-col bg-neutral-100">
+    <main class="flex h-full min-h-dvh flex-1 flex-col bg-primary-10">
       <slot />
     </main>
     <LayoutsFooterBlock />

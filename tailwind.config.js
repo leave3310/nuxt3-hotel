@@ -52,6 +52,9 @@ export default {
       minWidth: {
         container: "375px",
       },
+      lineHeight: {
+        1.2: "1.2",
+      },
     },
   },
   plugins: [
