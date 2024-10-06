@@ -55,7 +55,7 @@ const onSubmit = handleSubmit(async (values) => {
           享樂酒店，誠摯歡迎
         </div>
         <div
-          class="mb-10 text-[2rem] font-bold leading-[1.2] tracking-[0.1rem] text-neutral-0 xl:text-5xl xl:tracking-[0.15rem]"
+          class="mb-10 text-[2rem] font-bold leading-1.2 tracking-[0.1rem] text-neutral-0 xl:text-5xl xl:tracking-[0.15rem]"
         >
           立即開始旅程
         </div>
