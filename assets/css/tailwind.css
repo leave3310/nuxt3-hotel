@@ -27,19 +27,19 @@
   .h6 {
     @apply text-xl font-bold leading-1.2 tracking-[0.0625rem];
   }
-  .text-title {
+  .title {
     @apply text-base font-bold leading-normal tracking-[0.02rem];
   }
-  .text-subtitle {
+  .subtitle {
     @apply text-sm font-bold leading-normal tracking-[0.0175rem];
   }
-  .text-body {
+  .body {
     @apply text-base font-medium leading-normal tracking-[0.02rem];
   }
-  .text-body2{
+  .body2{
     @apply text-sm font-medium leading-normal tracking-[0.0175rem];
   }
-  .text-tiny{
+  .tiny{
     @apply text-xs font-medium leading-normal tracking-[0.015rem];
   }
 }

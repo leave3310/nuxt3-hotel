@@ -67,25 +67,25 @@ function changeSlide(slideNumber: number) {
       <p class="h4 xl:h2 mb-2 text-neutral-100">
         {{ name }}
       </p>
-      <p class="text-body2 xl:text-body mb-6 text-neutral-80 xl:mb-10">
+      <p class="body2 xl:body mb-6 text-neutral-80 xl:mb-10">
         {{ description }}
       </p>
       <ol class="mb-6 flex xl:mb-10">
-        <li class="text-subtitle xl:text-title mr-4 w-[6.0625rem] rounded-lg border border-primary-40 px-4 py-[1.38rem] text-neutral-80 xl:py-4">
+        <li class="subtitle xl:title mr-4 w-[6.0625rem] rounded-lg border border-primary-40 px-4 py-[1.38rem] text-neutral-80 xl:py-4">
           <IcSize class="mb-2 size-6 fill-primary" />
           {{ areaInfo }}
         </li>
-        <li class="text-subtitle xl:text-title mr-4 w-[6.0625rem] text-nowrap rounded-lg border border-primary-40 px-4 py-[1.38rem] text-neutral-80 xl:py-4">
+        <li class="subtitle xl:title mr-4 w-[6.0625rem] text-nowrap rounded-lg border border-primary-40 px-4 py-[1.38rem] text-neutral-80 xl:py-4">
           <IcBed class="mb-2 size-6 fill-primary" />
           {{ bedInfo }}
         </li>
-        <li class="text-subtitle xl:text-title w-[6.0625rem] rounded-lg border border-primary-40 px-4 py-[1.38rem] text-neutral-80 xl:py-4">
+        <li class="subtitle xl:title w-[6.0625rem] rounded-lg border border-primary-40 px-4 py-[1.38rem] text-neutral-80 xl:py-4">
           <IcPerson class="mb-2 size-6 fill-primary" />
           {{ maxPeople }}人
         </li>
       </ol>
       <div class="mb-6 h-0.5 w-full bg-[linear-gradient(90deg,#BE9C7C_0%,#FFF_100%)] xl:mb-10" />
-      <div class="text-title xl:h5 flex items-center justify-between py-4 text-primary xl:py-[0.84rem]">
+      <div class="title xl:h5 flex items-center justify-between py-4 text-primary xl:py-[0.84rem]">
         <div>
           NT$ {{ formatNumber(price) }}
         </div>

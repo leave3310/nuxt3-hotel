@@ -46,7 +46,7 @@ function changeSlide(slideNumber: number) {
             <h2 class="h4 xl:h2 mb-2">
               享樂酒店
             </h2>
-            <h3 class="text-title xl:h5 mb-5 xl:mb-10">
+            <h3 class="title xl:h5 mb-5 xl:mb-10">
               Enjoyment Luxury Hotel
             </h3>
             <div class="mx-auto h-[5.1875rem] w-0.5 rounded-[6.25rem] bg-[linear-gradient(#BE9C7C_0%,#FFF_100%)] xl:h-0.5 xl:w-full xl:bg-[linear-gradient(90deg,#BE9C7C_0%,#FFF_100%)]" />
@@ -64,7 +64,7 @@ function changeSlide(slideNumber: number) {
     <section class="px-3 py-10 xl:pb-[10.5rem] xl:pt-[7.5rem]">
       <div class="xl:mx-auto xl:max-w-[81rem]">
         <div class="mb-10 xl:mb-20">
-          <p class="text-subtitle xl:h6 mb-2 text-neutral-80 xl:mb-4">
+          <p class="subtitle xl:h6 mb-2 text-neutral-80 xl:mb-4">
             房型選擇
           </p>
           <h4 class="h3 xl:h1 text-primary">

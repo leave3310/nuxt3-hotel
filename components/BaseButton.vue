@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<BaseButtonProps>(), {
 });
 
 function classList() {
-  const baseButtonClass = "flex max-w-full items-center justify-center rounded-lg px-8 py-4 text-base font-bold tracking-[0.32rem] transition-colors";
+  const baseButtonClass = "flex max-w-full items-center justify-center rounded-lg px-8 py-4 text-base font-bold tracking-[0.02rem] transition-colors";
   const primaryClass = "bg-primary text-white hover:bg-primary-120 disabled:bg-neutral-40 disabled:text-neutral-60";
   const secondaryClass = "border border-primary bg-neutral-0 text-primary hover:border-primary-120 hover:bg-primary-10 hover:text-primary-120 disabled:border-neutral-60 disabled:bg-neutral-0 disabled:text-neutral-60 disabled:cursor-not-allowed";
   const ghostClass = "text-white hover:text-primary disabled:text-neutral-60";
