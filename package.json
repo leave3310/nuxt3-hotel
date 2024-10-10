@@ -28,7 +28,8 @@
     "pinia": "^2.1.7",
     "sweetalert2": "^11.12.3",
     "tailwind-merge": "^2.4.0",
-    "vue": "latest"
+    "vue": "latest",
+    "vue-final-modal": "^4.5.5"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.23.1",
