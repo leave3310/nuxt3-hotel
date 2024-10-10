@@ -89,3 +89,10 @@
     background-color: rgba(0, 0, 0, 0.2);
   }
 }
+
+.decorate-line {
+  background-image: url('@/assets/images/short_decorate.png');
+  @media (min-width: 1280px) {
+    background-image: url('@/assets/images/long_decorate.png');
+  }
+}

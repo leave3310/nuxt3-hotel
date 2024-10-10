@@ -1,10 +1,12 @@
+export interface BaseAddress {
+  zipcode: number;
+  detail: string;
+  county: string;
+  city: string;
+}
+
 export interface BaseUserInfo {
-  address: {
-    zipcode: number;
-    detail: string;
-    county: string;
-    city: string;
-  };
+  address: BaseAddress;
   _id: string;
   name: string;
   email: string;
