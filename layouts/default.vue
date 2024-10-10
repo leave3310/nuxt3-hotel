@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import { ModalsContainer } from "vue-final-modal";
+</script>
+
 <template>
   <div>
     <LayoutsHeaderBlock />
@@ -5,5 +9,6 @@
       <slot />
     </main>
     <LayoutsFooterBlock />
+    <ModalsContainer />
   </div>
 </template>
