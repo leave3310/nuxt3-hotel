@@ -2,6 +2,7 @@
 import emblaCarouselVue from "embla-carousel-vue";
 
 import { getRoom } from "@/api/instances/rooms";
+import { AppRouteEnum } from "@/typing/enum/router";
 
 import IcSize from "@/assets/icons/ic-size.svg";
 import IcBed from "@/assets/icons/ic-bed.svg";
@@ -68,7 +69,7 @@ function formatNumber(num: number): string {
 </script>
 
 <template>
-  <div>
+  <div class="bg-primary-10">
     <div ref="emblaRef" class="relative overflow-hidden xl:hidden">
       <div class="flex">
         <div v-for="item in data.result.imageUrlList" :key="item" class="flex-[0_0_100%]">
@@ -237,9 +238,11 @@ function formatNumber(num: number): string {
           NT$ {{ data.result.price }}
         </div>
         <div>
-          <BaseButton type="button" class-type="primary" class="title w-full px-12 py-4">
-            立即預訂
-          </BaseButton>
+          <nuxt-link :to="{ name: AppRouteEnum.ROOMS_ID_RESERVATION, params: { id } }">
+            <BaseButton type="button" class-type="primary" class="title w-full px-12 py-4">
+              立即預訂
+            </BaseButton>
+          </nuxt-link>
         </div>
       </div>
     </section>
