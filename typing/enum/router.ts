@@ -5,3 +5,8 @@ export enum AppRouteEnum {
   ROOMS_ID = "rooms-id",
   ROOMS_ID_RESERVATION = "rooms-id-reservation",
 }
+
+export enum UserRouteEnum {
+  INDEX = "user",
+  ORDERS = "user-orders",
+}
