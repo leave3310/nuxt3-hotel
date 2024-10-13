@@ -16,6 +16,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@nuxt/test-utils/module",
     "@nuxt/devtools",
+    "@nuxtjs/tailwindcss",
   ],
   css: ["vue-final-modal/style.css", "~/assets/css/tailwind.css"],
   postcss: {
