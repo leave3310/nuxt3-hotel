@@ -1,5 +1,6 @@
 export enum AppRouteEnum {
   LOGIN = "login",
+  SIGNUP = "signup",
   INDEX = "index",
   ROOMS_LIST = "rooms",
   ROOMS_ID = "rooms-id",

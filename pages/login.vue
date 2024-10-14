@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { postLogin } from "@/api/instances/user.ts";
+import { AppRouteEnum } from "@/typing/enum/router.ts";
 import type { LoginForm } from "@/typing/pages/login.ts";
 
 definePageMeta({
@@ -144,7 +145,7 @@ const onSubmit = handleSubmit(async (values) => {
               class="mr-2 text-sm font-medium leading-normal tracking-[0.0175rem] text-neutral-0 xl:text-base xl:tracking-[0.02rem]"
             >沒有會員嗎？</span>
             <router-link
-              to="#"
+              :to="{ name: AppRouteEnum.SIGNUP }"
               class="text-sm font-bold leading-normal tracking-[0.0175rem] text-primary underline xl:text-base xl:tracking-[0.02rem]"
             >
               前往註冊
