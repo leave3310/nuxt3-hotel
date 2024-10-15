@@ -1,11 +1,10 @@
 import { useCookie, useRouter } from "nuxt/app";
-import type { FetchError } from "ofetch";
 
 import { fetchInstance } from "@/api/index.ts";
 import { useUserStore } from "@/stores/user.ts";
 import { AppRouteEnum } from "@/typing/enum/router.ts";
-import { errorSweetAlert } from "@/utils/sweetAlert.ts";
-import type { LoginPayload, PostLoginRes } from "@/typing/api/user.ts";
+import { errorSweetAlert, successSweetAlert } from "@/utils/sweetAlert.ts";
+import type { CheckUserIsLoginRes, LoginPayload, PostLoginRes } from "@/typing/api/user.ts";
 import type { CustomFetchError } from "@/typing/api/index.ts";
 
 export async function postLogin(payload: LoginPayload) {
@@ -20,7 +19,9 @@ export async function postLogin(payload: LoginPayload) {
     });
     authCookie.value = res.token;
     userStore.updateUserInfo(res.result);
-    router.push({ name: AppRouteEnum.INDEX });
+    successSweetAlert("登入", "登入成功", () => {
+      router.push({ name: AppRouteEnum.INDEX });
+    });
   }
   catch (error) {
     const test = error as CustomFetchError | null;
@@ -38,18 +39,55 @@ export async function postLogin(payload: LoginPayload) {
 export async function getUser() {
   const router = useRouter();
   const userStore = useUserStore();
-  const authCookie = useCookie("auth");
 
   try {
     const res = await fetchInstance<PostLoginRes>("v1/user/", {
       method: "GET",
     });
-
-    authCookie.value = res.token;
     userStore.updateUserInfo(res.result);
   }
   // eslint-disable-next-line unused-imports/no-unused-vars
   catch (e) {
     router.push({ name: AppRouteEnum.LOGIN });
+  }
+}
+
+export async function checkUserIsLogin() {
+  const router = useRouter();
+  const authCookie = useCookie("auth");
+
+  try {
+    const res = await fetchInstance<CheckUserIsLoginRes>("v1/user/check", {
+      method: "GET",
+    });
+    authCookie.value = res.token;
+
+    return res.status;
+  }
+  // eslint-disable-next-line unused-imports/no-unused-vars
+  catch (e) {
+    router.push({ name: AppRouteEnum.LOGIN });
+  }
+}
+
+export async function logOut() {
+  const userStore = useUserStore();
+  const router = useRouter();
+  const authCookie = useCookie("auth");
+
+  try {
+    userStore.clearUserInfo();
+    authCookie.value = null;
+    successSweetAlert("登出", "登出成功", () => {
+      if (router.currentRoute.value.name === AppRouteEnum.INDEX) {
+        window.location.reload();
+      }
+      else {
+        router.push({ name: AppRouteEnum.INDEX });
+      }
+    });
+  }
+  catch (e) {
+    console.error(e);
   }
 }

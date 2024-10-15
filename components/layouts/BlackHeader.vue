@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import { AppRouteEnum } from "@/typing/enum/router.ts";
+import { logOut } from "@/api/instances/user.ts";
+import { AppRouteEnum, UserRouteEnum } from "@/typing/enum/router.ts";
 
 import LogoIcon from "@/assets/icons/logo.svg";
 import MobileLogoIcon from "@/assets/icons/mobile-logo.svg";
 import MenuIcon from "@/assets/icons/ic-menu.svg";
 import CloseIcon from "@/assets/icons/ic-close.svg";
+import IcProfile from "@/assets/icons/ic-profile.svg";
+
+const userStore = useUserStore();
 
 interface NavList {
   name: string;
@@ -17,15 +21,18 @@ const navList: NavList[] = [
     name: "客房旅宿",
     link: AppRouteEnum.ROOMS_LIST,
   },
-  {
-    name: "會員登入",
-    link: AppRouteEnum.LOGIN,
-  },
 ];
 
 const isShowMobileNav = ref(false);
 const toggleMobileNav = (isShow: boolean) => (isShowMobileNav.value = isShow);
 const mobileNavClass = () => (isShowMobileNav.value ? "flex" : "hidden");
+
+const isShowDesktopInfo = ref(false);
+const updateIsShowDesktopInfo = (status: boolean) => isShowDesktopInfo.value = status;
+const desktopInfoDom = ref<HTMLDivElement | null>(null);
+onClickOutside(desktopInfoDom, () => {
+  updateIsShowDesktopInfo(false);
+});
 </script>
 
 <template>
@@ -53,12 +60,34 @@ const mobileNavClass = () => (isShowMobileNav.value ? "flex" : "hidden");
               @click="toggleMobileNav(!isShowMobileNav)"
             />
           </div>
-          <div class="flex w-full flex-1 flex-col justify-center px-5 xl:flex-row xl:px-0">
+          <div class="flex flex-1 flex-col justify-center px-5 xl:flex-row xl:px-0">
             <ul class="flex flex-col items-center xl:flex-row">
-              <li v-for="item in navList" :key="item.name" class="mr-0 w-full xl:mr-4">
-                <NuxtLink :to="{ name: item.link }" class="mb-4 flex justify-center p-4 text-base font-bold tracking-[0.02rem] text-neutral-0 xl:mb-0">
+              <li v-for="item in navList" :key="item.name" class="mr-0 xl:mr-4">
+                <NuxtLink :to="{ name: item.link }" class="title mb-4 flex p-4 text-neutral-0 xl:mb-0" @click="toggleMobileNav(!isShowMobileNav)">
                   {{ item.name }}
                 </NuxtLink>
+              </li>
+              <li v-if="userStore.isLogin" class="title mb-4 mr-0 text-neutral-0 xl:mb-0 xl:mr-4">
+                <div ref="desktopInfoDom" class="relative hidden cursor-pointer justify-center p-4 xl:flex" @click="updateIsShowDesktopInfo(!isShowDesktopInfo)">
+                  <IcProfile class="mr-2 size-6 stroke-white" />
+                  {{ userStore.userInfo?.name }}
+                  <div v-show="isShowDesktopInfo" class="absolute right-0 top-[calc(100%+0.75rem)] w-[16.25rem] overflow-hidden rounded-[1.25rem] bg-neutral-0 py-3 text-neutral-80">
+                    <nuxt-link :to="{ name: UserRouteEnum.INDEX }" class="flex px-6 py-4 transition-colors hover:bg-primary-10 hover:text-primary">
+                      我的帳戶
+                    </nuxt-link>
+                    <button type="button" class="flex w-full px-6 py-4 transition-colors hover:bg-primary-10 hover:text-primary" @click="logOut">
+                      登出
+                    </button>
+                  </div>
+                </div>
+                <nuxt-link :to="{ name: UserRouteEnum.INDEX }" class="xl:hidden">
+                  我的帳戶
+                </nuxt-link>
+              </li>
+              <li v-else class="mr-0 xl:mr-4">
+                <nuxt-link :to="{ name: AppRouteEnum.LOGIN }" class="title mb-4 justify-center p-4 text-neutral-0 xl:mb-0">
+                  會員登入
+                </nuxt-link>
               </li>
             </ul>
             <button

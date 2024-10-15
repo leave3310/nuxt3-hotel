@@ -16,3 +16,5 @@ export interface BaseUserInfo {
   updatedAt: string;
   id: string;
 }
+
+export type BaseToken = string;

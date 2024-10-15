@@ -37,3 +37,20 @@ export function errorSweetAlert(text: string, callback?: () => void) {
       }
     });
 }
+
+export function successSweetAlert(title: string, text: string, callback?: () => void) {
+  swalWithButtons
+    .fire({
+      icon: "success",
+      title,
+      text,
+      customClass: {
+        confirmButton: "bg-primary text-white hover:bg-primary-120 flex max-w-full items-center justify-center rounded-lg px-8 py-4 text-base font-bold tracking-[0.02rem] transition-colors",
+      },
+    })
+    .then(() => {
+      if (callback) {
+        callback();
+      }
+    });
+}
