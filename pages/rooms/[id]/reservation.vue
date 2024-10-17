@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import { useModal } from "vue-final-modal";
+import dayjs from "dayjs";
+import "dayjs/locale/zh-cn";
 
 import { getRoom } from "@/api/instances/rooms";
-import { AppRouteEnum } from "@/typing/enum/router";
+import { postOrders } from "@/api/instances/orders.ts";
+import { useRoomStore } from "@/stores/room.ts";
+import { useUserStore } from "@/stores/user.ts";
+import { formatDayToSlash } from "@/utilities/day.ts";
+import { numberToCurrency } from "@/utilities/math.ts";
+import { RoomRouteEnum } from "@/typing/enum/router";
 import ZipCodeMap from "@/utilities/zipcodes.ts";
 
 import IcSize from "@/assets/icons/ic-size.svg";
@@ -15,13 +22,25 @@ import ProcessOrder from "@/components/modals/reservation/ProcessOrder.vue";
 definePageMeta({
   layout: "black-header",
 });
+const route = useRoute();
+const router = useRouter();
+const { id } = route.params;
+const { data } = await getRoom(id as string);
+
+const roomStore = useRoomStore();
+const userStore = useUserStore();
+
+watch(() => roomStore.bookRoomID, (newValue) => {
+  if (!newValue) {
+    router.push({ name: RoomRouteEnum.ROOMS_ID, params: { id } });
+  }
+}, {
+  immediate: true,
+});
 
 const { open, close } = useModal({
   component: ProcessOrder,
 });
-const route = useRoute();
-const { id } = route.params;
-const { data } = await getRoom(id as string);
 
 const roomLayout = [
   "市景",
@@ -30,26 +49,13 @@ const roomLayout = [
   "書房",
   "樓層電梯",
 ];
-// "roomId": "65251f6095429cd58654bf12",
-//   "checkInDate": "2023/06/18",
-//   "checkOutDate": "2023/06/19",
-//   "peopleNum": 2,
-//   "userInfo": {
-//     "address": {
-//       "zipcode": 802,
-//       "detail": "文山路23號"
-//     },
-//     "name": "Joanne Chen",
-//     "phone": "0912345678",
-//     "email": "example@gmail.com"
 
-const { handleSubmit, meta, resetForm, values } = useForm({
+const { handleSubmit, meta, resetForm, values, setFieldValue } = useForm({
   validationSchema: {
     name: { required: true },
     phone: { required: true },
     email: { email: true, required: true },
     county: { required: true },
-    city: { required: true },
     detailAddress: { required: true },
     zipcode: { required: true },
   },
@@ -58,19 +64,40 @@ const { handleSubmit, meta, resetForm, values } = useForm({
     phone: "",
     email: "",
     county: "",
-    city: "",
-    detailAddress: "",
     zipcode: "",
+    detailAddress: "",
   },
 });
-
 const { value: name, errorMessage: nameErrorMessage } = useField("name");
 const { value: phone, errorMessage: phoneErrorMessage } = useField("phone");
 const { value: email, errorMessage: emailErrorMessage } = useField("email");
 const { value: county, errorMessage: countyErrorMessage } = useField("county");
-const { value: city, errorMessage: cityErrorMessage } = useField("city");
 const { value: detailAddress, errorMessage: detailAddressErrorMessage } = useField("detailAddress");
 const { value: zipcode, errorMessage: zipcodeErrorMessage } = useField("zipcode");
+const onSubmit = handleSubmit(async (values) => {
+  const payload = {
+    roomId: id,
+    checkInDate: formatDayToSlash(roomStore.checkInOutDay.checkInDate),
+    checkOutDate: formatDayToSlash(roomStore.checkInOutDay.checkOutDate),
+    peopleNum: roomStore.reservationPeople,
+    userInfo: {
+      address: {
+        zipcode: values.zipcode,
+        detail: values.detailAddress,
+      },
+      name: values.name,
+      phone: values.phone,
+      email: values.email,
+    },
+  };
+  open();
+  await postOrders(payload);
+  close();
+});
+
+const totalNight = computed(() => {
+  return dayjs(roomStore.checkInOutDay.checkOutDate).diff(dayjs(roomStore.checkInOutDay.checkInDate), "day");
+});
 
 const countyOptions = [...new Set(ZipCodeMap.map(item => item.county))];
 const cityOptions = computed(() => {
@@ -79,16 +106,36 @@ const cityOptions = computed(() => {
     value: item.zipcode,
   }));
 });
-watch(() => county.value, () => {
-  resetForm({ values: {
-    ...values,
-    city: "",
-  } });
+watch(() => county.value, (newValue, oldValue) => {
+  if (oldValue) {
+    resetForm({
+      values: {
+        ...values,
+        zipcode: "",
+        detailAddress: "",
+      },
+    });
+  }
 });
+
+function fillUserInfo() {
+  setFieldValue("name", userStore.userInfo!.name);
+  setFieldValue("phone", userStore.userInfo!.phone);
+  setFieldValue("email", userStore.userInfo!.email);
+  setFieldValue("detailAddress", userStore.userInfo!.address.detail);
+  const zipCodeObj = ZipCodeMap.find(item => item.zipcode === userStore.userInfo!.address.zipcode);
+  setFieldValue("county", zipCodeObj!.county);
+  setFieldValue("zipcode", `${zipCodeObj!.zipcode}`);
+}
 
 const isShowErrorMessage = (errorMessage: string | undefined) => typeof errorMessage !== "undefined";
 function isShowErrorClass(errorMessage: string | undefined) {
   return typeof errorMessage === "undefined" ? "border-e-neutral-40" : "border-error";
+}
+
+dayjs.locale("zh-cn");
+function formatDayToChineseFormat(date: string | Date) {
+  return dayjs(date).format("M 月 D 日星期dd");
 }
 </script>
 
@@ -96,7 +143,7 @@ function isShowErrorClass(errorMessage: string | undefined) {
   <div class="flex flex-col justify-center bg-primary-10 px-3 py-10 xl:flex-row">
     <div class="mb-10 xl:mr-[4.5rem] xl:max-w-[46.625rem]">
       <div class="mb-10 flex items-center">
-        <nuxt-link :to="{ name: AppRouteEnum.ROOMS_ID, params: { id } }" class="mr-2">
+        <nuxt-link :to="{ name: RoomRouteEnum.ROOMS_ID, params: { id } }" class="mr-2">
           <IcArrowLeft class="size-6 fill-neutral-100" />
         </nuxt-link>
         <div class="h5 text-neutral-100">
@@ -116,7 +163,7 @@ function isShowErrorClass(errorMessage: string | undefined) {
               {{ data.result.name }}
             </div>
           </div>
-          <nuxt-link :to="{ name: AppRouteEnum.ROOMS_ID, params: { id } }" class="text-base font-bold leading-normal text-neutral-100 underline">
+          <nuxt-link :to="{ name: RoomRouteEnum.ROOMS_ID, params: { id } }" class="text-base font-bold leading-normal text-neutral-100 underline">
             編輯
           </nuxt-link>
         </div>
@@ -126,13 +173,13 @@ function isShowErrorClass(errorMessage: string | undefined) {
               訂房日期
             </h3>
             <div class="body mb-2 text-neutral-100">
-              入住：6 月 11 日星期三
+              入住：{{ formatDayToChineseFormat(roomStore.checkInOutDay.checkInDate) }}
             </div>
             <div class="body mb-2 text-neutral-100">
-              退房：6 月 11 日星期三
+              退房：{{ formatDayToChineseFormat(roomStore.checkInOutDay.checkOutDate) }}
             </div>
           </div>
-          <nuxt-link :to="{ name: AppRouteEnum.ROOMS_ID, params: { id } }" class="text-base font-bold leading-normal text-neutral-100 underline">
+          <nuxt-link :to="{ name: RoomRouteEnum.ROOMS_ID, params: { id } }" class="text-base font-bold leading-normal text-neutral-100 underline">
             編輯
           </nuxt-link>
         </div>
@@ -142,19 +189,24 @@ function isShowErrorClass(errorMessage: string | undefined) {
               房客人數
             </h3>
             <div class="body text-neutral-100">
-              2人
+              {{ roomStore.reservationPeople }} 人
             </div>
           </div>
-          <nuxt-link :to="{ name: AppRouteEnum.ROOMS_ID, params: { id } }" class="text-base font-bold leading-normal text-neutral-100 underline">
+          <nuxt-link :to="{ name: RoomRouteEnum.ROOMS_ID, params: { id } }" class="text-base font-bold leading-normal text-neutral-100 underline">
             編輯
           </nuxt-link>
         </div>
       </section>
       <hr class="my-10 border-neutral-60">
       <section>
-        <h2 class="h6 mb-8 text-neutral-100">
-          訂房人資訊
-        </h2>
+        <div class="flex items-center justify-between">
+          <h2 class="h6 mb-8 text-neutral-100">
+            訂房人資訊
+          </h2>
+          <button type="button" class="hidden text-base font-bold text-primary underline xl:flex" @click="fillUserInfo">
+            套用會員資料
+          </button>
+        </div>
         <form @submit.prevent>
           <div class="mb-6">
             <label
@@ -171,7 +223,7 @@ function isShowErrorClass(errorMessage: string | undefined) {
             >
             <div
               v-show="isShowErrorMessage(nameErrorMessage)"
-              class="mt-[0.44rem] text-sm font-bold leading-normal tracking-[0.0175rem] text-error"
+              class="subtitle mt-[0.44rem] text-error"
             >
               {{ nameErrorMessage }}
             </div>
@@ -191,7 +243,7 @@ function isShowErrorClass(errorMessage: string | undefined) {
             >
             <div
               v-show="isShowErrorMessage(phoneErrorMessage)"
-              class="mt-[0.44rem] text-sm font-bold leading-normal tracking-[0.0175rem] text-error"
+              class="subtitle mt-[0.44rem] text-error"
             >
               {{ phoneErrorMessage }}
             </div>
@@ -211,13 +263,14 @@ function isShowErrorClass(errorMessage: string | undefined) {
             >
             <div
               v-show="isShowErrorMessage(emailErrorMessage)"
-              class="mt-[0.44rem] text-sm font-bold leading-normal tracking-[0.0175rem] text-error"
+              class="subtitle mt-[0.44rem] text-error"
             >
               {{ emailErrorMessage }}
             </div>
           </div>
           <div>
             <label
+              for="county"
               class="subtitle xl:title mb-2 flex text-neutral-100"
             >地址</label>
             <div class="mb-4 flex gap-2">
@@ -232,13 +285,13 @@ function isShowErrorClass(errorMessage: string | undefined) {
                 </select>
                 <div
                   v-show="isShowErrorMessage(countyErrorMessage)"
-                  class="mt-[0.44rem] text-sm font-bold leading-normal tracking-[0.0175rem] text-error"
+                  class="subtitle mt-[0.44rem] text-error"
                 >
                   {{ countyErrorMessage }}
                 </div>
               </div>
               <div class="grow">
-                <select id="city" v-model="city" class="body2 xl:body w-full rounded-lg border-neutral-40 p-4 focus:border-primary focus:shadow-[0px_0px_0px_4px_rgba(190,156,124,0.10)] focus:ring-0">
+                <select id="city" v-model="zipcode" class="body2 xl:body w-full rounded-lg border-neutral-40 p-4 focus:border-primary focus:shadow-[0px_0px_0px_4px_rgba(190,156,124,0.10)] focus:ring-0">
                   <option disabled value="">
                     請選擇地址
                   </option>
@@ -247,10 +300,10 @@ function isShowErrorClass(errorMessage: string | undefined) {
                   </option>
                 </select>
                 <div
-                  v-show="isShowErrorMessage(cityErrorMessage)"
-                  class="mt-[0.44rem] text-sm font-bold leading-normal tracking-[0.0175rem] text-error"
+                  v-show="isShowErrorMessage(zipcodeErrorMessage)"
+                  class="subtitle mt-[0.44rem] text-error"
                 >
-                  {{ cityErrorMessage }}
+                  {{ zipcodeErrorMessage }}
                 </div>
               </div>
             </div>
@@ -263,49 +316,11 @@ function isShowErrorClass(errorMessage: string | undefined) {
             >
             <div
               v-show="isShowErrorMessage(detailAddressErrorMessage)"
-              class="mt-[0.44rem] text-sm font-bold leading-normal tracking-[0.0175rem] text-error"
+              class="subtitle mt-[0.44rem] text-error"
             >
               {{ detailAddressErrorMessage }}
             </div>
           </div>
-          <!-- <div class="mb-10 flex justify-between">
-            <div class="flex items-center">
-              <input
-                id="rememberAccount"
-                v-model="rememberAccount"
-                type="checkbox"
-                class="mr-2 hidden size-6 rounded border-neutral-60 bg-neutral-0"
-              >
-
-              <div v-show="rememberAccount">
-                <img src="@/assets/images/CheckboxChecked.png" alt="">
-              </div>
-              <div v-show="!rememberAccount">
-                <img src="@/assets/images/Checkbox.png" alt="">
-              </div>
-              <label
-                for="rememberAccount"
-                class="ml-2 cursor-pointer text-base font-bold leading-normal tracking-[0.0175rem] text-neutral-0 xl:text-base xl:tracking-[0.02rem]"
-              >
-                記住帳號
-              </label>
-            </div>
-            <router-link
-              to="#"
-              class="text-sm font-bold leading-normal tracking-[0.0175rem] text-primary underline xl:text-base xl:tracking-[0.02rem]"
-            >
-              忘記密碼?
-            </router-link>
-          </div>
-          <BaseButton
-            data-testid="login-button"
-            type="submit"
-            class-type="primary"
-            class="mb-10 w-full"
-            :disable="!meta.valid"
-          >
-            會員登入
-          </BaseButton> -->
         </form>
       </section>
       <hr class="my-10 border-neutral-60">
@@ -378,18 +393,18 @@ function isShowErrorClass(errorMessage: string | undefined) {
         <div class="body mb-3 flex justify-between text-neutral-80">
           <div>
             <span>
-              NT$ 10,000
+              NT$ {{ data.result.price }}
             </span>
             <span class="ml-2 mr-1">
               X
             </span>
             <span>
-              2 晚
+              {{ totalNight }} 晚
             </span>
           </div>
-          <span>NT$ 20,000</span>
+          <span>NT$ {{ numberToCurrency(totalNight * data.result.price) }}</span>
         </div>
-        <div class="body flex justify-between text-neutral-100">
+        <div v-show="false" class="body flex justify-between text-neutral-100">
           住宿折扣
           <span class="body text-primary">
             -NT$ 1,000
@@ -399,10 +414,10 @@ function isShowErrorClass(errorMessage: string | undefined) {
         <div class="title mb-6 flex justify-between text-neutral-100 xl:mb-10">
           總價
           <span>
-            NT$ 19,000
+            NT$ {{ numberToCurrency(totalNight * data.result.price) }}
           </span>
         </div>
-        <BaseButton class-type="primary" class="mt-auto w-full">
+        <BaseButton class-type="primary" class="mt-auto w-full" :disable="!meta.dirty || !meta.valid " @click="onSubmit">
           確認訂房
         </BaseButton>
       </div>
