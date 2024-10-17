@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import emblaCarouselVue from "embla-carousel-vue";
+import { useModal } from "vue-final-modal";
 
 import { getRoom } from "@/api/instances/rooms";
-import { AppRouteEnum } from "@/typing/enum/router";
+import { useRoomStore } from "@/stores/room.ts";
+import { formatDayToSlash } from "@/utilities/day.ts";
+import { numberToCurrency } from "@/utilities/math.ts";
+import { RoomRouteEnum } from "@/typing/enum/router";
 
+import DatePicker from "@/components/modals/rooms/DatePicker.vue";
 import IcSize from "@/assets/icons/ic-size.svg";
 import IcBed from "@/assets/icons/ic-bed.svg";
 import IcPerson from "@/assets/icons/ic-person.svg";
@@ -15,7 +20,23 @@ definePageMeta({
   layout: "black-header",
 });
 
+const roomStore = useRoomStore();
+
+const { open, close } = useModal({
+  component: DatePicker,
+  attrs: {
+    onConfirm(date) {
+      roomStore.updateCheckInOutDay(date);
+      close();
+    },
+    onCancel() {
+      close();
+    },
+  },
+});
+
 const route = useRoute();
+const router = useRouter();
 const { id } = route.params;
 const { data } = await getRoom(id as string);
 
@@ -63,8 +84,9 @@ const accommodationNotice = [
   "為了確保所有客人的安全，請勿在走廊或公共區域大聲喧嘩，並遵守酒店的其他規定。",
 ];
 
-function formatNumber(num: number): string {
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+function bookRightNow() {
+  roomStore.updateBookRoomID(id as string);
+  router.push({ name: RoomRouteEnum.ROOMS_ID_RESERVATION, params: { id } });
 }
 </script>
 
@@ -200,20 +222,20 @@ function formatNumber(num: number): string {
         </p>
         <div class="mb-10">
           <div class="mb-4 flex justify-between gap-x-2">
-            <div class="grow rounded-lg border border-neutral-100 p-4 ">
+            <div class="grow cursor-pointer rounded-lg border border-neutral-100 p-4" @click="open">
               <div class="tiny text-neutral-80">
                 入住
               </div>
               <div>
-                {{ '2023 / 12 / 03' }}
+                {{ formatDayToSlash(roomStore.checkInOutDay.checkInDate) }}
               </div>
             </div>
-            <div class="grow rounded-lg border border-neutral-100 p-4">
+            <div class="grow cursor-pointer rounded-lg border border-neutral-100 p-4" @click="open">
               <div class="tiny text-neutral-80">
                 退房
               </div>
               <div>
-                {{ '2023 / 12 / 03' }}
+                {{ formatDayToSlash(roomStore.checkInOutDay.checkOutDate) }}
               </div>
             </div>
           </div>
@@ -222,35 +244,39 @@ function formatNumber(num: number): string {
               人數
             </div>
             <div class="flex items-center">
-              <button type="button" class="title rounded-[6.25rem] border border-neutral-40 p-4">
-                <IcMinus class="size-6 fill-neutral-100" />
+              <button
+                type="button"
+                class="title disabled: group rounded-[6.25rem] border border-neutral-40 p-4"
+                :disabled="roomStore.reservationPeople === 1"
+                @click="roomStore.updateReservationPeople(--roomStore.reservationPeople)"
+              >
+                <IcMinus class="size-6 fill-neutral-100 group-disabled:fill-neutral-60" />
               </button>
               <span class="h6 px-[1.38rem] text-neutral-100">
-                {{ 2 }}
+                {{ roomStore.reservationPeople }}
               </span>
-              <button type="button" class="title rounded-[6.25rem] border border-neutral-40 p-4">
+              <button type="button" class="title rounded-[6.25rem] border border-neutral-40 p-4" @click="roomStore.updateReservationPeople(++roomStore.reservationPeople)">
                 <IcPlus class="size-6 fill-neutral-100" />
               </button>
             </div>
           </div>
         </div>
         <div class="h5 mb-10 text-primary">
-          NT$ {{ data.result.price }}
+          NT$ {{ numberToCurrency(data.result.price) }}
         </div>
         <div>
-          <nuxt-link :to="{ name: AppRouteEnum.ROOMS_ID_RESERVATION, params: { id } }">
-            <BaseButton type="button" class-type="primary" class="title w-full px-12 py-4">
-              立即預訂
-            </BaseButton>
-          </nuxt-link>
+          <BaseButton type="button" class-type="primary" class="title w-full px-12 py-4" @click="bookRightNow">
+            立即預訂
+          </BaseButton>
+          <nuxt-link :to="{ name: RoomRouteEnum.ROOMS_ID_RESERVATION, params: { id } }" />
         </div>
       </div>
     </section>
     <div class="fixed inset-x-0 bottom-0 flex items-center justify-between border-t border-t-neutral-40 bg-white p-3 xl:hidden">
       <div class="body2 text-neutral-80">
-        ＮＴ$ {{ formatNumber(data.result.price) }} / 晚
+        ＮＴ$ {{ numberToCurrency(data.result.price) }} / 晚
       </div>
-      <BaseButton type="button" class-type="primary" class="title px-12 py-4">
+      <BaseButton type="button" class-type="primary" class="title px-12 py-4" @click="open">
         查看可訂日期
       </BaseButton>
     </div>
