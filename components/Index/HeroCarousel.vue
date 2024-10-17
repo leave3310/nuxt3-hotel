@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import emblaCarouselVue from "embla-carousel-vue";
 
-import { AppRouteEnum } from "@/typing/enum/router";
+import { RoomRouteEnum } from "@/typing/enum/router";
 
 const slideList = [
   {
@@ -81,7 +81,7 @@ function changeSlide(slideNumber: number) {
                   <div class="title mb-10 text-neutral-40 xl:mb-[3.75rem] xl:text-[1.67vw] xl:font-semibold xl:leading-1.2">
                     我們致力於為您提供無與倫比的奢華體驗與優質服務
                   </div>
-                  <nuxt-link :to="AppRouteEnum.ROOMS_LIST" class="flex max-w-[19.3175rem] items-center justify-end rounded-lg bg-neutral-0 p-5 transition-colors after:ml-4 after:h-[0.0625rem] after:w-[9.375rem] after:bg-neutral-100 after:transition-all after:content-[''] hover:bg-primary hover:text-neutral-0 hover:after:w-[7.5rem] hover:after:bg-neutral-0 xl:max-w-none">
+                  <nuxt-link :to="{ name: RoomRouteEnum.ROOMS_LIST }" class="flex max-w-[19.3175rem] items-center justify-end rounded-lg bg-neutral-0 p-5 transition-colors after:ml-4 after:h-[0.0625rem] after:w-[9.375rem] after:bg-neutral-100 after:transition-all after:content-[''] hover:bg-primary hover:text-neutral-0 hover:after:w-[7.5rem] hover:after:bg-neutral-0 xl:max-w-none">
                     立即訂房
                   </nuxt-link>
                 </div>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import emblaCarouselVue from "embla-carousel-vue";
 
-import { AppRouteEnum } from "@/typing/enum/router.ts";
+import { RoomRouteEnum } from "@/typing/enum/router.ts";
 import type { BaseRoom } from "@/typing/base/rooms.ts";
 
 import RoomImgCarousel from "@/components/index/RoomImgCarousel.vue";
@@ -42,7 +42,7 @@ onMounted(() => {
             <div class="h5 xl:h3 mb-6 text-neutral-0 xl:mb-10">
               NT$ {{ item.price }}
             </div>
-            <nuxt-link :to="{ path: AppRouteEnum.ROOMS_LIST }" class="title mb-6 flex items-center justify-end rounded-lg bg-neutral-0 p-5 text-neutral-100 transition-all after:ml-4 after:h-[0.0625rem] after:w-20 after:bg-neutral-100 after:transition-all after:content-[''] hover:bg-primary hover:text-neutral-0 hover:after:bg-neutral-0 xl:mb-24 xl:p-10 xl:text-2xl xl:font-bold xl:leading-normal xl:after:w-[9.375rem] xl:hover:after:w-[8.125rem]">
+            <nuxt-link :to="{ name: RoomRouteEnum.ROOMS_LIST }" class="title mb-6 flex items-center justify-end rounded-lg bg-neutral-0 p-5 text-neutral-100 transition-all after:ml-4 after:h-[0.0625rem] after:w-20 after:bg-neutral-100 after:transition-all after:content-[''] hover:bg-primary hover:text-neutral-0 hover:after:bg-neutral-0 xl:mb-24 xl:p-10 xl:text-2xl xl:font-bold xl:leading-normal xl:after:w-[9.375rem] xl:hover:after:w-[8.125rem]">
               查看更多
             </nuxt-link>
           </div>

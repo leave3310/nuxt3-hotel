@@ -2,7 +2,7 @@
 import { ref } from "vue";
 
 import { logOut } from "@/api/instances/user.ts";
-import { AppRouteEnum, UserRouteEnum } from "@/typing/enum/router.ts";
+import { AppRouteEnum, RoomRouteEnum, UserRouteEnum } from "@/typing/enum/router.ts";
 
 import LogoIcon from "@/assets/icons/logo.svg";
 import MobileLogoIcon from "@/assets/icons/mobile-logo.svg";
@@ -19,7 +19,7 @@ interface NavList {
 const navList: NavList[] = [
   {
     name: "客房旅宿",
-    link: AppRouteEnum.ROOMS_LIST,
+    link: RoomRouteEnum.ROOMS_LIST,
   },
 ];
 
