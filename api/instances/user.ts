@@ -3,7 +3,7 @@ import { useCookie, useRouter } from "nuxt/app";
 import { fetchInstance } from "@/api/index.ts";
 import { useUserStore } from "@/stores/user.ts";
 import { AppRouteEnum } from "@/typing/enum/router.ts";
-import { errorSweetAlert, successSweetAlert } from "@/utils/sweetAlert.ts";
+import { errorSweetAlert, successSweetAlert } from "@/utilities/sweetAlert.ts";
 import type { CheckUserIsLoginRes, LoginPayload, PostLoginRes } from "@/typing/api/user.ts";
 import type { CustomFetchError } from "@/typing/api/index.ts";
 
