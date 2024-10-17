@@ -11,7 +11,16 @@ export default defineNuxtPlugin((_nuxtApp) => {
   });
 
   configure({
-    generateMessage: localize({ zh_TW: zhTW }),
+    generateMessage: localize({
+      zh_TW: {
+        ...zhTW,
+        messages: {
+          ...zhTW.messages,
+          required: "此欄位為必填",
+
+        },
+      },
+    }),
   });
 
   setLocale("zh_TW");
