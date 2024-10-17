@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import dayjs from "dayjs";
+
 import { getOrder } from "@/api/instances/orders.ts";
+import { numberToCurrency } from "@/utilities/math.ts";
+import { UserRouteEnum } from "@/typing/enum/router.ts";
 
 import IcCheck from "@/assets/icons/ic-check.svg";
 
@@ -10,6 +14,13 @@ definePageMeta({
 const route = useRoute();
 const { id } = route.params;
 const { data } = await getOrder(id as string);
+
+const totalNight = computed(() => dayjs(data.value.result.checkOutDate).diff(dayjs(data.value.result.checkInDate), "day"));
+
+dayjs.locale("zh-cn");
+function formatDayToChineseFormat(date: string | Date) {
+  return dayjs(date).format("M 月 D 日星期dd");
+}
 </script>
 
 <template>
@@ -33,7 +44,7 @@ const { data } = await getOrder(id as string);
         <hr class="my-10 border-neutral-40 xl:my-20">
         <div class="title xl:h5 text-neutral-0">
           立即查看你的訂單紀錄
-          <BaseButton to="/" class-type="primary" class="mt-6 xl:mt-10 xl:max-w-[13.625rem]">
+          <BaseButton :to="{ name: UserRouteEnum.ORDERS }" class-type="primary" class="mt-6 xl:mt-10 xl:max-w-[13.625rem]">
             前往我的訂單
           </BaseButton>
         </div>
@@ -80,20 +91,20 @@ const { data } = await getOrder(id as string);
         <img :src="data.result.roomId.imageUrl" alt="" class="mb-6 aspect-[319/150] rounded-lg object-cover object-center xl:mb-10 xl:aspect-[398/240]">
         <div class="subtitle xl:h6 mb-6 flex items-center text-neutral-80">
           <span class="flex items-center after:mx-2 after:text-neutral-60 after:content-['|']">
-            {{ data.result.roomId.name }}，{{ 1 }} 晚
+            {{ data.result.roomId.name }}，{{ totalNight }} 晚
           </span>
           <span>
             住宿人數：{{ data.result.peopleNum }} 位
           </span>
         </div>
         <div class="subtitle xl:title mb-2 flex text-neutral-80 before:mr-3 before:flex before:h-6 before:w-1 before:rounded-[0.625rem] before:bg-primary before:content-['']">
-          入住：{{ data.result.checkInDate }}，15:00 可入住
+          入住：{{ formatDayToChineseFormat(data.result.checkInDate) }}，15:00 可入住
         </div>
         <div class="subtitle xl:title mb-6 flex text-neutral-80 before:mr-3 before:flex before:h-6 before:w-1 before:rounded-[0.625rem] before:bg-neutral-60 before:content-['']">
-          退房：{{ data.result.checkOutDate }}，12:00 前退房
+          退房：{{ formatDayToChineseFormat(data.result.checkOutDate) }}，12:00 前退房
         </div>
         <div class="subtitle xl:title text-neutral-80">
-          NT$ {{ data.result.roomId.price }}
+          NT$ {{ numberToCurrency(data.result.roomId.price) }}
         </div>
         <hr class="my-6 border-neutral-40 xl:my-10">
 
