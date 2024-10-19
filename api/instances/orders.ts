@@ -2,10 +2,11 @@ import { useRouter } from "nuxt/app";
 
 import { fetchInstance, useFetchInstance } from "@/api/index.ts";
 import { RoomRouteEnum } from "@/typing/enum/router";
-import type { GetOrder } from "@/typing/api/orders.ts";
+import type { GetOrder, GetOrders } from "@/typing/api/orders.ts";
 
 export const getOrder = (id: string) => useFetchInstance<GetOrder>(`v1/orders/${id}`);
 
+export const getOrders = () => useFetchInstance<GetOrders>(`v1/orders/`);
 interface BaseOrder {
   roomId: string | string[];
   checkInDate: string;
@@ -78,7 +79,17 @@ export async function postOrders(payload: BaseOrder) {
 
     router.push({ name: RoomRouteEnum.ROOMS_ID_SUCCESS, params: { id: res.result._id } });
   }
+  catch (e) {
+    console.error(e);
+  }
+}
 
+export async function deleteOrder(id: string) {
+  try {
+    await fetchInstance<PostOrderRes>(`v1/orders/${id}`, {
+      method: "DELETE",
+    });
+  }
   catch (e) {
     console.error(e);
   }
