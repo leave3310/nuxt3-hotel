@@ -1,5 +1,42 @@
 <script setup lang="ts">
+import { updateUserInfo } from "@/api/instances/user.ts";
+import { useUserStore } from "@/stores/user.ts";
+
+const userStore = useUserStore();
 const isResetPassword = ref(false);
+
+interface UpdatePasswordForm {
+  oldPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+}
+const { handleSubmit, meta } = useForm<UpdatePasswordForm>({
+  validationSchema: {
+    oldPassword: { required: true },
+    newPassword: { required: true },
+    confirmNewPassword: { required: true },
+  },
+  initialValues: {
+    oldPassword: "",
+    newPassword: "",
+    confirmNewPassword: "",
+  },
+});
+const { value: oldPassword, errorMessage: oldPasswordErrorMessage } = useField("oldPassword");
+const { value: newPassword, errorMessage: newPasswordErrorMessage } = useField("newPassword");
+const { value: confirmNewPassword, errorMessage: confirmNewPasswordErrorMessage } = useField("confirmNewPassword");
+
+const onSubmit = handleSubmit(async (values) => {
+  const payload = {
+    userId: userStore.userInfo!._id,
+    oldPassword: values.oldPassword,
+    newPassword: values.newPassword,
+  };
+  await updateUserInfo(payload);
+  isResetPassword.value = false;
+});
+
+const isShowErrorMessage = (errorMessage: string | undefined) => typeof errorMessage !== "undefined";
 </script>
 
 <template>
@@ -28,34 +65,51 @@ const isResetPassword = ref(false);
         重設
       </button>
     </div>
-    <div v-else>
+    <form v-else @submit.prevent="onSubmit">
       <div class="mb-4 xl:mb-6">
         <label for="oldPassword" class="subtitle xl:title mb-2 flex text-neutral-100">
           舊密碼
         </label>
-        <input id="oldPassword" type="password" class="body2 xl:body w-full rounded-lg border border-neutral-40 p-4 focus:border-primary focus:shadow-[0px_0px_0px_4px_rgba(190,156,124,0.10)] focus:ring-0" placeholder="請輸入舊密碼">
+        <input id="oldPassword" v-model="oldPassword" type="password" class="body2 xl:body w-full rounded-lg border border-neutral-40 p-4 focus:border-primary focus:shadow-[0px_0px_0px_4px_rgba(190,156,124,0.10)] focus:ring-0" placeholder="請輸入舊密碼">
+        <div
+          v-show="isShowErrorMessage(oldPasswordErrorMessage)"
+          class="subtitle mt-[0.44rem] text-error"
+        >
+          {{ oldPasswordErrorMessage }}
+        </div>
       </div>
       <div class="mb-4 xl:mb-6">
         <label for="newPassword" class="subtitle xl:title mb-2 flex text-neutral-100">
           新密碼
         </label>
-        <input id="newPassword" type="password" class="body2 xl:body w-full rounded-lg border border-neutral-40 p-4 focus:border-primary focus:shadow-[0px_0px_0px_4px_rgba(190,156,124,0.10)] focus:ring-0" placeholder="請輸入新密碼">
+        <input id="newPassword" v-model="newPassword" type="password" class="body2 xl:body w-full rounded-lg border border-neutral-40 p-4 focus:border-primary focus:shadow-[0px_0px_0px_4px_rgba(190,156,124,0.10)] focus:ring-0" placeholder="請輸入新密碼">
+        <div
+          v-show="isShowErrorMessage(newPasswordErrorMessage)"
+          class="subtitle mt-[0.44rem] text-error"
+        >
+          {{ newPasswordErrorMessage }}
+        </div>
       </div>
       <div class="mb-6 xl:mb-10">
         <label for="confirmNewPassword" class="subtitle xl:title mb-2 flex text-neutral-100">
           確認新密碼
         </label>
-        <input id="confirmNewPassword" type="password" class="body2 xl:body w-full rounded-lg border border-neutral-40 p-4 focus:border-primary focus:shadow-[0px_0px_0px_4px_rgba(190,156,124,0.10)] focus:ring-0" placeholder="請再輸入一次新密碼">
+        <input id="confirmNewPassword" v-model="confirmNewPassword" type="password" class="body2 xl:body w-full rounded-lg border border-neutral-40 p-4 focus:border-primary focus:shadow-[0px_0px_0px_4px_rgba(190,156,124,0.10)] focus:ring-0" placeholder="請再輸入一次新密碼">
+        <div
+          v-show="isShowErrorMessage(confirmNewPasswordErrorMessage)"
+          class="subtitle mt-[0.44rem] text-error"
+        >
+          {{ confirmNewPasswordErrorMessage }}
+        </div>
       </div>
       <BaseButton
         type="submit"
         class-type="primary"
         class="title w-full text-nowrap xl:max-w-[8.0625rem]"
-        :disable="true"
+        :disable="!meta.valid || !meta.dirty"
       >
-        <!-- !meta.valid -->
         儲存設定
       </BaseButton>
-    </div>
+    </form>
   </section>
 </template>

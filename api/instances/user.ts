@@ -4,7 +4,7 @@ import { fetchInstance } from "@/api/index.ts";
 import { useUserStore } from "@/stores/user.ts";
 import { AppRouteEnum } from "@/typing/enum/router.ts";
 import { errorSweetAlert, successSweetAlert } from "@/utilities/sweetAlert.ts";
-import type { CheckUserIsLoginRes, LoginPayload, PostLoginRes } from "@/typing/api/user.ts";
+import type { CheckUserIsLoginRes, LoginPayload, PostLoginRes, UpdateUserInfoRes } from "@/typing/api/user.ts";
 import type { CustomFetchError } from "@/typing/api/index.ts";
 
 export async function postLogin(payload: LoginPayload) {
@@ -85,6 +85,37 @@ export async function logOut() {
       else {
         router.push({ name: AppRouteEnum.INDEX });
       }
+    });
+  }
+  catch (e) {
+    console.error(e);
+  }
+}
+
+interface BaseUserInfo {
+  userId: string;
+}
+// 個人資料更新
+interface ProfileUpdate {
+  name: string;
+  phone: string;
+  birthday: string;
+  address: {
+    zipcode: number;
+    detail: string;
+  };
+}
+// 密碼更新
+interface PasswordUpdate {
+  oldPassword: string;
+  newPassword: string;
+}
+type UpdateUserInfoPayload = BaseUserInfo & (ProfileUpdate | PasswordUpdate);
+export async function updateUserInfo(payload: UpdateUserInfoPayload) {
+  try {
+    await fetchInstance<UpdateUserInfoRes>("v1/user/", {
+      method: "PUT",
+      body: payload,
     });
   }
   catch (e) {

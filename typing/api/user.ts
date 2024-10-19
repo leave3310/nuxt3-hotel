@@ -14,3 +14,7 @@ export interface PostLoginRes extends ApiResponse {
 export interface CheckUserIsLoginRes extends ApiResponse {
   token: BaseToken;
 }
+
+export interface UpdateUserInfoRes extends ApiResponse {
+  result: BaseUserInfo;
+}

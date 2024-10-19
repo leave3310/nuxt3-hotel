@@ -1,8 +1,6 @@
 export interface BaseAddress {
   zipcode: number;
   detail: string;
-  county: string;
-  city: string;
 }
 
 export interface BaseUserInfo {
