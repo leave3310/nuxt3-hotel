@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import dayjs from "dayjs";
 import emblaCarouselVue from "embla-carousel-vue";
 import { useModal } from "vue-final-modal";
 
@@ -9,6 +10,7 @@ import { numberToCurrency } from "@/utilities/math.ts";
 import { RoomRouteEnum } from "@/typing/enum/router";
 
 import DatePicker from "@/components/modals/rooms/DatePicker.vue";
+import MobilePeople from "@/components/modals/rooms/MobilePeople.vue";
 import IcSize from "@/assets/icons/ic-size.svg";
 import IcBed from "@/assets/icons/ic-bed.svg";
 import IcPerson from "@/assets/icons/ic-person.svg";
@@ -22,11 +24,33 @@ definePageMeta({
 
 const roomStore = useRoomStore();
 
+const mobilePrepareToPay = ref(false);
+const mobileConfirmPeople = useModal({
+  component: MobilePeople,
+  attrs: {
+    onConfirm() {
+      mobilePrepareToPay.value = true;
+      mobileConfirmPeople.close();
+    },
+    onCancel() {
+      mobileConfirmPeople.close();
+    },
+    onBackPreStep() {
+      mobileConfirmPeople.close();
+      // eslint-disable-next-line ts/no-use-before-define
+      open();
+    },
+  },
+});
+
 const { open, close } = useModal({
   component: DatePicker,
   attrs: {
     onConfirm(date) {
       roomStore.updateCheckInOutDay(date);
+      if (window.innerWidth < 1280) {
+        mobileConfirmPeople.open();
+      }
       close();
     },
     onCancel() {
@@ -87,6 +111,10 @@ const accommodationNotice = [
 function bookRightNow() {
   roomStore.updateBookRoomID(id as string);
   router.push({ name: RoomRouteEnum.ROOMS_ID_RESERVATION, params: { id } });
+}
+
+function totalDay() {
+  return dayjs(roomStore.checkInOutDay.checkOutDate).diff(dayjs(roomStore.checkInOutDay.checkInDate), "day");
 }
 </script>
 
@@ -262,7 +290,7 @@ function bookRightNow() {
           </div>
         </div>
         <div class="h5 mb-10 text-primary">
-          NT$ {{ numberToCurrency(data.result.price) }}
+          NT$ {{ numberToCurrency(data.result.price * totalDay() * roomStore.reservationPeople) }}
         </div>
         <div>
           <BaseButton type="button" class-type="primary" class="title w-full px-12 py-4" @click="bookRightNow">
@@ -273,10 +301,19 @@ function bookRightNow() {
       </div>
     </section>
     <div class="fixed inset-x-0 bottom-0 flex items-center justify-between border-t border-t-neutral-40 bg-white p-3 xl:hidden">
-      <div class="body2 text-neutral-80">
+      <div v-if="mobilePrepareToPay" class="body2 text-neutral-80">
+        ＮＴ$ {{ numberToCurrency(data.result.price * totalDay() * roomStore.reservationPeople) }} / {{ totalDay() }} 晚 / {{ roomStore.reservationPeople }}人
+        <div class="mt-1 text-neutral-100 underline">
+          {{ dayjs(roomStore.checkInOutDay.checkInDate).format('MM/DD') }} - {{ dayjs(roomStore.checkInOutDay.checkOutDate).format('MM/DD') }}
+        </div>
+      </div>
+      <div v-else class="body2 text-neutral-80">
         ＮＴ$ {{ numberToCurrency(data.result.price) }} / 晚
       </div>
-      <BaseButton type="button" class-type="primary" class="title px-12 py-4" @click="open">
+      <BaseButton v-if="mobilePrepareToPay" type="button" class-type="primary" class="title px-12 py-4" @click="bookRightNow">
+        立即預訂
+      </BaseButton>
+      <BaseButton v-else type="button" class-type="primary" class="title px-12 py-4" @click="open">
         查看可訂日期
       </BaseButton>
     </div>
